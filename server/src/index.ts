@@ -187,7 +187,7 @@ app.get('/api/documents', async (req: Request, res: Response): Promise<void> => 
       orderBy: { createdAt: 'desc' }
     });
 
-    const parsedDocs = docs.map(d => ({
+    const parsedDocs = docs.map((d: any) => ({
       ...d,
       tags: JSON.parse(d.tags || '[]')
     }));
@@ -297,11 +297,11 @@ app.post('/api/documents', upload.single('file'), async (req: Request, res: Resp
 // ----------------------------------------------------
 app.post('/api/documents/:id/verify', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { facultyName } = req.body;
 
     const doc = await prisma.document.update({
-      where: { id },
+      where: { id: String(id) },
       data: {
         verificationStatus: 'VERIFIED',
         rejectionReason: null,
@@ -327,11 +327,11 @@ app.post('/api/documents/:id/verify', async (req: Request, res: Response): Promi
 
 app.post('/api/documents/:id/reject', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { reason, facultyName } = req.body;
 
     const doc = await prisma.document.update({
-      where: { id },
+      where: { id: String(id) },
       data: {
         verificationStatus: 'REJECTED',
         rejectionReason: reason || 'Document image is unclear.',
@@ -360,9 +360,9 @@ app.post('/api/documents/:id/reject', async (req: Request, res: Response): Promi
 // ----------------------------------------------------
 app.get('/api/verify/:docVerificationId', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { docVerificationId } = req.params;
-    const doc = await prisma.document.findUnique({
-      where: { docVerificationId },
+    const docVerificationId = req.params.docVerificationId as string;
+    const doc: any = await prisma.document.findUnique({
+      where: { docVerificationId: String(docVerificationId) },
       include: {
         user: { include: { profile: true } }
       }
@@ -395,8 +395,8 @@ app.get('/api/verify/:docVerificationId', async (req: Request, res: Response): P
         fileHash: doc.fileHash,
         verifiedBy: doc.verifiedBy,
         verifiedAt: doc.verifiedAt,
-        studentName: doc.user.name,
-        department: doc.user.profile?.department,
+        studentName: doc.user?.name || 'Student Candidate',
+        department: doc.user?.profile?.department || 'Computer Science and Engineering',
         college: 'Sri Sivasubramaniya Nadar College of Engineering',
         authenticitySeal: 'OFFICIAL_SDV_CRYPTOGRAPHIC_VERIFIED'
       }
@@ -432,7 +432,7 @@ app.post('/api/bundle', async (req: Request, res: Response): Promise<void> => {
     manifest += `Generated Date: ${new Date().toUTCString()}\n`;
     manifest += `Total Attached Documents: ${docs.length}\n\n`;
 
-    docs.forEach((doc, idx) => {
+    docs.forEach((doc: any, idx: number) => {
       manifest += `${idx + 1}. [${doc.category}] ${doc.title}\n`;
       manifest += `   Verification ID: ${doc.docVerificationId}\n`;
       manifest += `   Status: ${doc.verificationStatus}\n`;
@@ -460,7 +460,7 @@ app.get('/api/placement/drives', async (req: Request, res: Response): Promise<vo
       include: { applications: true },
       orderBy: { createdAt: 'desc' }
     });
-    const parsed = drives.map(d => ({
+    const parsed = drives.map((d: any) => ({
       ...d,
       eligibleDepts: JSON.parse(d.eligibleDepts || '[]'),
       requiredDocTypes: JSON.parse(d.requiredDocTypes || '[]'),
