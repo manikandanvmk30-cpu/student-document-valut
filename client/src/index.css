@@ -6,7 +6,7 @@
   }
 
   body {
-    background-color: #0B0F19;
+    background-color: #566fb0;
     color: #F1F5F9;
     font-family: var(--font-sans);
     overflow-x: hidden;
@@ -15,7 +15,7 @@
 
 /* Custom Glassmorphism & Neon Glow Utilities */
 .glass-panel {
-  background: rgba(17, 24, 39, 0.75);
+  background: rgba(24, 47, 98, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
